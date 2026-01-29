@@ -6,7 +6,11 @@
 
 **YTPod** is a tiny iPod‑style desktop player for YouTube playlists and searches.
 
-https://github.com/user-attachments/assets/531b5e7e-d3ec-486a-92fd-1e805af2d5d0
+
+
+https://github.com/user-attachments/assets/b3984b6c-0f6e-4ba2-a0f1-ff1bb7994b89
+
+
 
 ## Download (macOS)
 
