@@ -38,20 +38,20 @@ export const IPodShell: React.FC<Props> = ({
       <div className="ipod ipod-small">
         <div className="window-controls">
           <button
-            className="window-control window-control--min"
-            onClick={handleMinimize}
-            aria-label="Minimize"
-            title="Minimize"
-          >
-            &minus;
-          </button>
-          <button
             className="window-control window-control--close"
             onClick={handleClose}
             aria-label="Close"
             title="Close"
           >
             ×
+          </button>
+          <button
+            className="window-control window-control--min"
+            onClick={handleMinimize}
+            aria-label="Minimize"
+            title="Minimize"
+          >
+            &minus;
           </button>
         </div>
         <div className="ipod-screen-frame">
