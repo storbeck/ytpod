@@ -1,7 +1,7 @@
 # YTPod
 
 <p align="center">
-  <img src="build/icon.png" alt="YTPod icon" width="160" />
+  <img width="1024" height="1024" alt="icon" src="https://github.com/user-attachments/assets/a49d17bd-3532-4a39-ac50-110cca3087d3" />
 </p>
 
 **YTPod** is a tiny iPod‑style desktop player for YouTube playlists and searches.
