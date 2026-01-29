@@ -9,6 +9,53 @@ import { SearchScreen } from "./SearchScreen";
 type Track = {
   id: string;
   title: string;
+  artist: string;
+  trackTitle: string;
+  source: string;
+};
+
+const decodeHtml = (value: string): string => {
+  if (!value) return value;
+  try {
+    const textarea = document.createElement("textarea");
+    textarea.innerHTML = value;
+    return textarea.value;
+  } catch {
+    return value;
+  }
+};
+
+const buildTrack = (id: string, title: string, channelTitle?: string | null): Track => {
+  const decodedTitle = decodeHtml(title);
+  const decodedChannel = decodeHtml(channelTitle ?? "");
+  const separators = [" - ", " – ", " — ", " | "];
+  let artist = "";
+  let trackTitle = decodedTitle;
+
+  for (const sep of separators) {
+    const idx = decodedTitle.indexOf(sep);
+    if (idx > 0 && idx < decodedTitle.length - sep.length) {
+      const left = decodedTitle.slice(0, idx).trim();
+      const right = decodedTitle.slice(idx + sep.length).trim();
+      if (left && right) {
+        artist = left;
+        trackTitle = right;
+        break;
+      }
+    }
+  }
+
+  if (!artist) {
+    artist = decodedChannel || "Unknown Artist";
+  }
+
+  return {
+    id,
+    title: decodedTitle,
+    artist,
+    trackTitle,
+    source: decodedChannel || "YouTube",
+  };
 };
 
 type Screen = "menu" | "nowPlaying" | "playlist" | "search" | "settings";
@@ -18,6 +65,18 @@ const PRESET_PLAYLISTS: { label: string; id: string }[] = [
   { label: "Jazz Vibes", id: "jazz vibes playlist" },
   { label: "Synthwave / Retrowave", id: "synthwave retrowave mix" },
   { label: "Indie Mix", id: "indie rock mix" },
+  { label: "Focus Flow", id: "deep focus music mix" },
+  { label: "Late Night Drive", id: "late night drive playlist" },
+  { label: "Alt Pop Now", id: "alt pop 2024 playlist" },
+  { label: "Hyperpop Heat", id: "hyperpop playlist" },
+  { label: "RnB Essentials", id: "rnb essentials playlist" },
+  { label: "Afrobeats Pulse", id: "afrobeats 2024 playlist" },
+  { label: "K-Pop Hits", id: "kpop hits 2024 playlist" },
+  { label: "House & Dance", id: "house dance mix" },
+  { label: "Techno Tunnel", id: "techno mix" },
+  { label: "Ambient Drift", id: "ambient electronic playlist" },
+  { label: "Post-Rock Waves", id: "post rock mix" },
+  { label: "Instrumental Chill", id: "instrumental chill playlist" },
 ];
 
 export const App: React.FC = () => {
@@ -32,14 +91,14 @@ export const App: React.FC = () => {
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [playlistTitle, setPlaylistTitle] = useState("Playlist");
-  const [playlistEmptyHint, setPlaylistEmptyHint] = useState(
-    "Go to Settings to load a playlist.",
-  );
+  const [playlistEmptyHint, setPlaylistEmptyHint] = useState("");
   const [positionSeconds, setPositionSeconds] = useState(0);
   const [durationSeconds, setDurationSeconds] = useState(0);
   const [playerReady, setPlayerReady] = useState(false);
   const playerRef = useRef<any | null>(null);
   const lastLoadedIdRef = useRef<string | null>(null);
+  const tracksRef = useRef<Track[]>([]);
+  const currentIndexRef = useRef(0);
 
   // Load saved API key once on startup so user doesn't have to re-enter it.
   useEffect(() => {
@@ -66,6 +125,14 @@ export const App: React.FC = () => {
       console.warn("Unable to persist API key", e);
     }
   }, [apiKey]);
+
+  useEffect(() => {
+    tracksRef.current = tracks;
+  }, [tracks]);
+
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
 
   // Initialize YouTube IFrame Player API
   useEffect(() => {
@@ -98,6 +165,15 @@ export const App: React.FC = () => {
             },
             onError: (event: any) => {
               console.warn("YouTube player error", event?.data);
+            },
+            onStateChange: (event: any) => {
+              if (event?.data !== 0) return; // 0 = ended
+              const list = tracksRef.current;
+              if (!list || list.length === 0) return;
+              const nextIndex = (currentIndexRef.current + 1) % list.length;
+              setCurrentIndex(nextIndex);
+              setIsPlaying(true);
+              setScreen("nowPlaying");
             },
           },
         });
@@ -228,8 +304,10 @@ export const App: React.FC = () => {
         for (const item of json.items) {
           const videoId = item.contentDetails?.videoId;
           const title = item.snippet?.title;
+          const channelTitle =
+            item.snippet?.videoOwnerChannelTitle ?? item.snippet?.channelTitle;
           if (videoId && title) {
-            collected.push({ id: videoId, title });
+            collected.push(buildTrack(videoId, title, channelTitle));
           }
         }
 
@@ -247,16 +325,22 @@ export const App: React.FC = () => {
       setPlaylistEmptyHint(
         collected.length ? "" : "No videos found in this playlist.",
       );
-      setScreen("playlist");
+      setScreen("nowPlaying");
     } catch (e) {
       console.error("Failed to load playlist", e);
     }
   };
 
-  const runSearchFor = async (query: string, title: string) => {
+  const runSearchFor = async (
+    query: string,
+    title: string,
+    options: { switchToNowPlaying?: boolean } = {},
+  ) => {
     if (!apiKey || !query.trim()) return;
     setSearching(true);
     setSearchError(null);
+
+    const { switchToNowPlaying = false } = options;
 
     try {
       const params = new URLSearchParams({
@@ -281,8 +365,9 @@ export const App: React.FC = () => {
         .map((item: any) => {
           const videoId = item.id?.videoId;
           const title = item.snippet?.title;
+          const channelTitle = item.snippet?.channelTitle;
           if (!videoId || !title) return null;
-          return { id: videoId, title };
+          return buildTrack(videoId, title, channelTitle);
         })
         .filter(Boolean) as Track[];
 
@@ -293,10 +378,10 @@ export const App: React.FC = () => {
 
       setTracks(results);
       setCurrentIndex(0);
-      setIsPlaying(false);
+      setIsPlaying(true);
       setPlaylistTitle(title);
       setPlaylistEmptyHint("No results. Try a different search.");
-      setScreen("playlist");
+      setScreen(switchToNowPlaying ? "nowPlaying" : "playlist");
     } catch (e) {
       console.error("Search failed", e);
       setSearchError("Search failed. Check your API key or try again.");
@@ -306,7 +391,9 @@ export const App: React.FC = () => {
   };
 
   const runSearch = async () => {
-    return runSearchFor(searchQuery, "Search results");
+    return runSearchFor(searchQuery, "Search results", {
+      switchToNowPlaying: false,
+    });
   };
 
   const currentTrack = tracks[currentIndex];
@@ -422,7 +509,7 @@ export const App: React.FC = () => {
     // Treat preset "id" as a search query for robustness, so we don't depend
     // on specific playlist IDs that might disappear.
     // Append "music" to the query to get better music results (not shown in UI).
-    runSearchFor(`${id} music`, label);
+    runSearchFor(`${id} music`, label, { switchToNowPlaying: true });
   };
 
   const handleLoadCustom = () => {

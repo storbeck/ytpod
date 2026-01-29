@@ -1,7 +1,9 @@
 import React from "react";
 
 type Props = {
-  track: { id: string; title: string } | undefined;
+  track:
+    | { id: string; title: string; artist: string; trackTitle: string; source: string }
+    | undefined;
   index: number;
   total: number;
   isPlaying: boolean;
@@ -30,20 +32,17 @@ export const NowPlayingScreen: React.FC<Props> = ({
   };
 
   return (
-    <div className="lcd">
-      <div className="lcd-titlebar">
-        <div className="lcd-title">
-          <span className="play-icon" aria-hidden="true" />
-          Now Playing
-        </div>
-        <div className="battery small" aria-hidden="true" />
-      </div>
-
+    <div className="lcd now-playing">
       <div className="lcd-body">
         <div className="lcd-subtle">
           {total > 0 ? `${index + 1} of ${total}` : "No playlist loaded"}
         </div>
-        <div className="lcd-track-title">{track ? track.title : "—"}</div>
+        <div className="lcd-track-meta">
+          {track
+            ? `${track.artist} — ${track.trackTitle || track.title}`
+            : "—"}
+        </div>
+        <div className="lcd-subtle">{track ? track.source : "—"}</div>
         <div className="lcd-subtle">{isPlaying ? "Playing" : "Paused"}</div>
 
         <div className="lcd-progress">

@@ -36,7 +36,6 @@ export const PlaylistScreen: React.FC<Props> = ({
     <div className="lcd">
       <div className="lcd-titlebar">
         <div className="lcd-title">{title}</div>
-        <div className="battery small" aria-hidden="true" />
       </div>
 
       <div className="lcd-list">
@@ -79,21 +78,26 @@ export const PlaylistScreen: React.FC<Props> = ({
                 Load custom playlist
               </button>
             </div>
-
-            <div className="lcd-subtle lcd-subtle--mt-8">Current playlist</div>
           </>
         )}
 
-        {tracks.map((t, i) => (
-          <button
-            key={t.id + i}
-            className={"lcd-option" + (i === currentIndex ? " selected" : "")}
-            onClick={() => onSelect(i)}
-          >
-            <span className="lcd-option-text">{t.title}</span>
-          </button>
-        ))}
-        {tracks.length === 0 && (
+        {tracks.length > 0 && (
+          <>
+            {showControls && (
+              <div className="lcd-subtle lcd-subtle--mt-8">Current playlist</div>
+            )}
+            {tracks.map((t, i) => (
+              <button
+                key={t.id + i}
+                className={"lcd-option" + (i === currentIndex ? " selected" : "")}
+                onClick={() => onSelect(i)}
+              >
+                <span className="lcd-option-text">{t.title}</span>
+              </button>
+            ))}
+          </>
+        )}
+        {tracks.length === 0 && emptyHint && (
           <div className="lcd-empty">{emptyHint}</div>
         )}
       </div>

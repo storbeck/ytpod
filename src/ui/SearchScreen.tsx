@@ -19,7 +19,6 @@ export const SearchScreen: React.FC<Props> = ({
     <div className="lcd">
       <div className="lcd-titlebar">
         <div className="lcd-title">Search</div>
-        <div className="battery small" aria-hidden="true" />
       </div>
 
       <div className="lcd-form">
@@ -56,4 +55,3 @@ export const SearchScreen: React.FC<Props> = ({
     </div>
   );
 };
-

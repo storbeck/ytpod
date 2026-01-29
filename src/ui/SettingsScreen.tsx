@@ -13,12 +13,11 @@ export const SettingsScreen: React.FC<Props> = ({
     <div className="lcd">
       <div className="lcd-titlebar">
         <div className="lcd-title">Settings</div>
-        <div className="battery small" aria-hidden="true" />
       </div>
 
       <div className="lcd-form">
         <label className="lcd-label">
-          API key
+          YouTube API key
           <input
             className="lcd-input"
             value={apiKey}
@@ -29,10 +28,15 @@ export const SettingsScreen: React.FC<Props> = ({
         <div className="lcd-help">
           Your key is stored locally so you only set it once.
           <br />
-          Choose playlists from the Playlist menu.
+          <a
+            href="https://developers.google.com/youtube/registering_an_application"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Get instructions
+          </a>
         </div>
       </div>
     </div>
   );
 };
-

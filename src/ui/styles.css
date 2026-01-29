@@ -11,6 +11,7 @@ body,
 html {
   margin: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 .app-root {
@@ -40,8 +41,48 @@ html {
 }
 
 .ipod-small {
-  transform: scale(0.67, 0.67);
+  transform: scale(0.7, 0.7);
   transform-origin: top left;
+}
+
+.window-controls {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+  -webkit-app-region: no-drag;
+}
+
+.window-control {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: #d0d0c8;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.window-control--min {
+  background: #f4bf4f;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.window-control--close {
+  background: #ff5f57;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.window-control:hover {
+  filter: brightness(0.95);
 }
 
 .ipod-screen-frame {
@@ -63,6 +104,7 @@ html {
   color: #484647;
   -webkit-app-region: no-drag;
 }
+
 
 .outer-ring {
   position: relative;
@@ -262,6 +304,13 @@ html {
 .lcd-title {
   font-size: 20px;
   font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .play-icon {
@@ -275,63 +324,27 @@ html {
   width: 0;
 }
 
-.battery {
-  position: absolute;
-  right: 6px;
-  top: 50%;
-  transform: translate(0, -50%);
-  height: 50px;
-  width: 100px;
-  background-color: #c1c1ba;
-  border: 5px solid #484647;
+.lcd-title--marquee {
+  gap: 6px;
 }
 
-.battery:before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: -12px;
-  transform: translate(0, -50%);
-  height: 33%;
-  width: 7px;
-  background-color: #c1c1ba;
-  border-right: 5px solid #484647;
-  border-top: 5px solid #484647;
-  border-bottom: 5px solid #484647;
+.lcd-title--marquee .lcd-marquee {
+  display: inline-block;
+  max-width: 180px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-.battery:after {
-  content: "";
-  position: absolute;
-  top: 5px;
-  bottom: 5px;
-  left: 5px;
-  width: 70px;
-  background: repeating-linear-gradient(
-    to right,
-    #484647,
-    #484647 20px,
-    #c1c1ba 20px,
-    #c1c1ba 25px,
-    #484647 25px,
-    #484647 45px,
-    #c1c1ba 45px,
-    #c1c1ba 50px,
-    #484647 50px,
-    #484647 70px
-  );
-}
-
-.battery.small {
-  transform: translate(0, -50%) scale(0.3, 0.3);
-  transform-origin: 100% 25%;
-}
 
 .lcd-body {
   padding-top: 10px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.lcd.now-playing .lcd-body {
+  gap: 6px;
 }
 
 .lcd-subtle {
@@ -348,9 +361,39 @@ html {
 
 .lcd-track-title {
   font-weight: 700;
-  line-height: 1.1;
-  max-height: 2.2em;
+  line-height: 1.2;
   overflow: hidden;
+  white-space: nowrap;
+}
+
+.lcd-track-meta {
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.lcd-marquee {
+  position: relative;
+}
+
+.lcd-marquee-track {
+  display: inline-flex;
+  gap: 36px;
+  padding-right: 36px;
+  animation: lcd-marquee 12s linear infinite;
+}
+
+.lcd-marquee-track span {
+  display: inline-block;
+  min-width: max-content;
+}
+
+@keyframes lcd-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 
 .lcd-progress {
@@ -492,6 +535,18 @@ html {
   font-family: Arial, sans-serif;
   font-size: 12px;
   opacity: 0.85;
+}
+
+.lcd.now-playing .lcd-track-meta,
+.lcd.now-playing .lcd-subtle {
+  font-size: 14px;
+  line-height: 1.15;
+}
+
+.lcd.now-playing .lcd-track-meta {
+  max-height: 2.3em;
+  overflow: hidden;
+  word-break: break-word;
 }
 
 .hidden-audio {

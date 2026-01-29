@@ -17,11 +17,47 @@ export const IPodShell: React.FC<Props> = ({
   onMenu,
   onCenter,
 }) => {
+  const handleMinimize = () => {
+    try {
+      (window as any)?.electronAPI?.minimize?.();
+    } catch {
+      // no-op
+    }
+  };
+
+  const handleClose = () => {
+    try {
+      (window as any)?.electronAPI?.close?.();
+    } catch {
+      // no-op
+    }
+  };
+
   return (
     <div className="ipod-shell">
       <div className="ipod ipod-small">
+        <div className="window-controls">
+          <button
+            className="window-control window-control--min"
+            onClick={handleMinimize}
+            aria-label="Minimize"
+            title="Minimize"
+          >
+            &minus;
+          </button>
+          <button
+            className="window-control window-control--close"
+            onClick={handleClose}
+            aria-label="Close"
+            title="Close"
+          >
+            ×
+          </button>
+        </div>
         <div className="ipod-screen-frame">
-          <div className="ipod-lcd">{topScreen}</div>
+          <div className="ipod-lcd">
+            {topScreen}
+          </div>
         </div>
 
         <div className="outer-ring">
@@ -69,4 +105,3 @@ export const IPodShell: React.FC<Props> = ({
     </div>
   );
 };
-

@@ -24,7 +24,6 @@ export const HomeMenuScreen: React.FC<Props> = ({
     <div className="lcd">
       <div className="lcd-titlebar">
         <div className="lcd-title">iPod</div>
-        <div className="battery small" aria-hidden="true" />
       </div>
 
       <div className="lcd-menu">
@@ -47,4 +46,3 @@ export const HomeMenuScreen: React.FC<Props> = ({
     </div>
   );
 };
-

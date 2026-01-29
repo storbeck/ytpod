@@ -1,16 +1,18 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, ipcMain } = require("electron");
 const path = require("node:path");
 
 const isDev = !app.isPackaged;
+const iconPath = path.join(__dirname, "../build/icon.png");
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 430,
-    height: 720,
+    width: 291,
+    height: 485,
     resizable: false,
     frame: false,
     transparent: true,
     hasShadow: false,
+    icon: iconPath,
     backgroundColor: "#00000000",
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -28,6 +30,19 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  ipcMain.on("window:minimize", (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (win) win.minimize();
+  });
+
+  ipcMain.on("window:close", (event) => {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    if (win) win.close();
+  });
+
+  if (process.platform === "darwin") {
+    app.dock.setIcon(iconPath);
+  }
   createWindow();
 
   app.on("activate", () => {
@@ -40,4 +55,3 @@ app.on("window-all-closed", () => {
     app.quit();
   }
 });
-
