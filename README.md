@@ -1,16 +1,8 @@
-# YTPod
-
-<p align="center">
-  <img width="64" height="64" alt="icon" src="https://github.com/user-attachments/assets/a49d17bd-3532-4a39-ac50-110cca3087d3" />
-</p>
+# <img width="32" height="32" alt="icon" src="https://github.com/user-attachments/assets/a49d17bd-3532-4a39-ac50-110cca3087d3" /> YTPod
 
 **YTPod** is a tiny iPod‑style desktop player for YouTube playlists and searches.
 
-
-
 https://github.com/user-attachments/assets/b3984b6c-0f6e-4ba2-a0f1-ff1bb7994b89
-
-
 
 ## Download (macOS)
 
